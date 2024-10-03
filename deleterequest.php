@@ -1,15 +1,14 @@
 <?php
 
-// URL API publik untuk GET dan POST
+// URL API publik untuk GET, POST, dan DELETE
 $url = 'http://jsonplaceholder.typicode.com/posts';
 
 // Jika form dikirim (POST request)
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title']) && isset($_POST['body'])) {
     // Data dari form yang akan dikirim ke API
     $new_data = array(
         'title' => $_POST['title'],
         'body' => $_POST['body'],
-        'userId' => $_POST['userId']
     );
 
     // Inisialisasi cURL untuk POST
@@ -28,6 +27,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Decode respons dari POST
     $post_response_data = json_decode($post_response, true);
+}
+
+// Jika tombol delete ditekan (DELETE request)
+if (isset($_POST['delete_id'])) {
+    $delete_id = $_POST['delete_id'];
+
+    // URL untuk DELETE request
+    $delete_url = $url . '/' . $delete_id;
+
+    // Inisialisasi cURL untuk DELETE
+    $ch_delete = curl_init();
+    curl_setopt($ch_delete, CURLOPT_URL, $delete_url);
+    curl_setopt($ch_delete, CURLOPT_CUSTOMREQUEST, "DELETE");
+    curl_setopt($ch_delete, CURLOPT_RETURNTRANSFER, true);
+
+    // Eksekusi cURL untuk DELETE dan dapatkan respon
+    $delete_response = curl_exec($ch_delete);
+
+    // Tutup cURL DELETE
+    curl_close($ch_delete);
+
+    // Tampilkan pesan sukses dari API setelah DELETE
+    if ($delete_response === "") {
+        $delete_message = "Post ID $delete_id berhasil dihapus.";
+    } else {
+        $delete_message = "Post ID $delete_id gagal dihapus.";
+    }
 }
 
 // Inisialisasi cURL untuk GET
@@ -114,13 +140,25 @@ $first_five = array_slice($responseData, 0, 5);
             border-radius: 5px;
             border: 1px solid #ccc;
         }
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
+        button, .delete-button {
+            padding: 8px 15px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .delete-button {
+            background-color: #e53935;
+            color: white;
+            font-size: 12px;
+        }
+        .delete-button:hover, button:hover {
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -136,8 +174,6 @@ $first_five = array_slice($responseData, 0, 5);
         <label for="body">Isi</label>
         <textarea id="body" name="body" rows="4" required></textarea>
 
-       
-
         <button type="submit">Submit Data</button>
     </form>
 
@@ -151,6 +187,10 @@ $first_five = array_slice($responseData, 0, 5);
         </div>
     <?php endif; ?>
 
+    <?php if (isset($delete_message)): ?>
+        <h2><?php echo $delete_message; ?></h2>
+    <?php endif; ?>
+
     <h1>Daftar GET Teratas 5</h1>
     
     <div class="container">
@@ -158,6 +198,12 @@ $first_five = array_slice($responseData, 0, 5);
         <div class="card">
             <h3><?php echo htmlspecialchars($post['title']); ?></h3>
             <p><?php echo htmlspecialchars($post['body']); ?></p>
+
+            <!-- Tombol delete untuk menghapus post -->
+            <form method="POST" action="">
+                <input type="hidden" name="delete_id" value="<?php echo $post['id']; ?>">
+                <button type="submit" class="delete-button">Hapus</button>
+            </form>
         </div>
         <?php endforeach; ?>
     </div>
