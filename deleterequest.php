@@ -3,7 +3,7 @@
 // URL API publik untuk GET, POST, dan DELETE
 $url = 'http://jsonplaceholder.typicode.com/posts';
 
-// Jika form dikirim (POST request)
+// Jika form dikirim (POST request) untuk menambahkan data
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title']) && isset($_POST['body'])) {
     // Data dari form yang akan dikirim ke API
     $new_data = array(
@@ -48,7 +48,7 @@ if (isset($_POST['delete_id'])) {
     // Tutup cURL DELETE
     curl_close($ch_delete);
 
-    // Tampilkan pesan sukses dari API setelah DELETE
+    // Tampilkan pesan respons dari API setelah DELETE
     if ($delete_response === "") {
         $delete_message = "Post ID $delete_id berhasil dihapus.";
     } else {
@@ -88,7 +88,7 @@ $first_five = array_slice($responseData, 0, 5);
             padding: 20px;
         }
         h1 {
-            text-align: left;
+            text-align: center;
             color: #333;
         }
         h2 {
@@ -140,25 +140,39 @@ $first_five = array_slice($responseData, 0, 5);
             border-radius: 5px;
             border: 1px solid #ccc;
         }
-        button, .delete-button {
-            padding: 8px 15px;
+        button {
+            padding: 5px 10px; 
             border: none;
             border-radius: 5px;
             cursor: pointer;
             margin-top: 10px;
-            font-size: 14px;
-        }
-        button {
+            font-size: 12px; 
             background-color: #4CAF50;
             color: white;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
         }
         .delete-button {
             background-color: #e53935;
             color: white;
             font-size: 12px;
+            padding: 8px 12px; /* Lebih besar */
+            border-radius: 5px; /* Lebih besar */
+            transition: background-color 0.3s, transform 0.2s;
+            border: none; /* Menghapus border default */
+            cursor: pointer; /* Mengubah cursor saat hover */
         }
-        .delete-button:hover, button:hover {
-            opacity: 0.8;
+        .delete-button:hover {
+            background-color: #c62828;
+            transform: scale(1.05); /* Menambah efek zoom saat hover */
+        }
+        .response-message {
+            text-align: center;
+            color: #4CAF50; /* Warna hijau untuk pesan sukses */
+            margin: 20px 0;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -188,7 +202,7 @@ $first_five = array_slice($responseData, 0, 5);
     <?php endif; ?>
 
     <?php if (isset($delete_message)): ?>
-        <h2><?php echo $delete_message; ?></h2>
+        <div class="response-message"><?php echo $delete_message; ?></div>
     <?php endif; ?>
 
     <h1>Daftar GET Teratas 5</h1>
@@ -199,7 +213,7 @@ $first_five = array_slice($responseData, 0, 5);
             <h3><?php echo htmlspecialchars($post['title']); ?></h3>
             <p><?php echo htmlspecialchars($post['body']); ?></p>
 
-            <!-- Tombol delete untuk menghapus post -->
+            <!-- Form untuk menghapus post -->
             <form method="POST" action="">
                 <input type="hidden" name="delete_id" value="<?php echo $post['id']; ?>">
                 <button type="submit" class="delete-button">Hapus</button>

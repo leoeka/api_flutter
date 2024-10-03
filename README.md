@@ -2,6 +2,8 @@
 
 # pratikum 2 menambahkan data baru ke dalam API yang sama ![Alt text](<Screenshot 2024-10-02 085701.png>) 
 
+# pratikum 3 menambahkan delete ke dalam API yang sama ![Alt text](<Screenshot 2024-10-03 150853.png>)
+
 # perbedaan antara Get, Post, dan Delete 
 
 # Get adalah program yang digunakan untuk mengambil data melalui URL sebagai parameter
